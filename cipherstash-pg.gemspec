@@ -4,7 +4,7 @@
 require_relative 'lib/pg/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "pg"
+  spec.name          = "cipherstash-pg"
   spec.version       = PG::VERSION
   spec.authors       = ["Michael Granger", "Lars Kanis"]
   spec.email         = ["ged@FaerieMUD.org", "lars@greiz-reinsdorf.de"]
