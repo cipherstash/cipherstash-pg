@@ -21,7 +21,7 @@ TESTDIR = BASEDIR + "tmp_test_*"
 DLEXT   = RbConfig::CONFIG['DLEXT']
 EXT     = LIBDIR + "pg_ext.#{DLEXT}"
 
-GEMSPEC = 'pg.gemspec'
+GEMSPEC = 'cipherstash-pg.gemspec'
 
 CLEAN.include( TESTDIR.to_s )
 CLEAN.include( PKGDIR.to_s, TMPDIR.to_s )
@@ -39,32 +39,64 @@ task :maint do
 	ENV['MAINTAINER_MODE'] = 'yes'
 end
 
-# Rake-compiler task
-Rake::ExtensionTask.new do |ext|
-	ext.name           = 'pg_ext'
-	ext.gem_spec       = $gem_spec
-	ext.ext_dir        = 'ext'
-	ext.lib_dir        = 'lib'
-	ext.source_pattern = "*.{c,h}"
-	ext.cross_compile  = true
-	ext.cross_platform = CrossLibraries.map(&:for_platform)
+spec = Bundler.load_gemspec("cipherstash-pg.gemspec")
 
-	ext.cross_config_options += CrossLibraries.map do |lib|
-		{
-			lib.for_platform => [
-				"--enable-windows-cross",
-				"--with-pg-include=#{lib.static_postgresql_incdir}",
-				"--with-pg-lib=#{lib.static_postgresql_libdir}",
-				# libpq-fe.h resides in src/interfaces/libpq/ before make install
-				"--with-opt-include=#{lib.static_postgresql_libdir}",
-			]
-		}
-	end
+require "rubygems/package_task"
 
-	# Add libpq.dll to windows binary gemspec
-	ext.cross_compiling do |spec|
-		spec.files << "lib/#{spec.platform}/libpq.dll"
-	end
+Gem::PackageTask.new(spec) do |pkg|
+end
+
+require "rake/extensiontask"
+
+exttask = Rake::ExtensionTask.new("cipherstash_pg", spec) do |ext|
+  ext.lib_dir = "lib"
+  ext.source_pattern = "*.{rs,toml}"
+  ext.cross_compile  = true
+  ext.cross_platform = %w[x86_64-linux x86_64-darwin arm64-darwin aarch64-linux]
+end
+
+namespace :gem do
+  desc "Push all freshly-built gems to RubyGems"
+  task :push do
+    Rake::Task.tasks.select { |t| t.name =~ %r{^pkg/cipherstash-pg-.*\.gem} && t.already_invoked }.each do |pkgtask|
+      sh "gem", "push", pkgtask.name
+    end
+
+    Rake::Task.tasks
+      .select { |t| t.name =~ %r{^gem:cross:} && exttask.cross_platform.include?(t.name.split(":").last) }
+      .select(&:already_invoked)
+      .each do |task|
+      platform = task.name.split(":").last
+      sh "gem", "push", "pkg/#{spec.full_name}-#{platform}.gem"
+    end
+  end
+
+  namespace :cross do
+    task :prepare do
+      require "rake_compiler_dock"
+      sh "bundle package"
+    end
+
+    exttask.cross_platform.each do |platform|
+      desc "Cross-compile all native gems in parallel"
+      multitask :all => platform
+
+      desc "Cross-compile a binary gem for #{platform}"
+      task platform => :prepare do
+        RakeCompilerDock.sh <<-EOT, platform: platform, image: "rbsys/rcd:#{platform}"
+          set -e
+          [[ "#{platform}" =~ ^a ]] && rustup default nightly
+          # This re-installs the nightly version of the relevant target after
+          # we so rudely switch the default toolchain
+          [ "#{platform}" = "arm64-darwin" ] && rustup target add aarch64-apple-darwin
+          [ "#{platform}" = "aarch64-linux" ] && rustup target add aarch64-unknown-linux-gnu
+					(cd driver/pq-ext && ./build.sh setup && ./build.sh build)
+          bundle install
+          rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
+        EOT
+      end
+    end
+  end
 end
 
 RSpec::Core::RakeTask.new(:spec).rspec_opts = "--profile -cfdoc"

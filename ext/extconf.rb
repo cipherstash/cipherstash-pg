@@ -31,9 +31,7 @@ if enable_config("windows-cross")
 else
 	# Native build
 
-	pgconfig = with_config('pg-config') ||
-		with_config('pg_config') ||
-		find_executable('pg_config')
+	pgconfig = "#{__dir__}/../driver/pq-ext/ext/build/bin/pg_config"
 
 	if pgconfig && pgconfig != 'ignore'
 		$stderr.puts "Using config values from %s" % [ pgconfig ]

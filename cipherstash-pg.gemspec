@@ -29,6 +29,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.cert_chain    = ["certs/ged.pem"]
   spec.rdoc_options  = ["--main", "README.rdoc",
-                        "--title", "PG: The Ruby PostgreSQL Driver"]
+                        "--title", "CipgerStash PG: The Ruby PostgreSQL Driver with CipherStash support"]
   spec.extra_rdoc_files = `git ls-files -z *.rdoc lib/*.rb lib/*/*.rb ext/*.c ext/*.h`.split("\x0")
 end
