@@ -1,6 +1,6 @@
 # -*- ruby -*-
 
-# Specify your gem's runtime dependencies in pg.gemspec
+# Specify your gem's runtime dependencies in cipherstash-pg.gemspec
 gemspec
 
 source "https://rubygems.org/"
