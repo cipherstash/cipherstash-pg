@@ -48,6 +48,15 @@ end
 
 require "rake/extensiontask"
 
+# Target platforms.
+# The keys are the RCD platform names and the values are the Rust toolchains and Rust version that are required.
+target_platforms = {
+ "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "default" },
+ "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "default" },
+ "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
+ "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
+}
+
 exttask = Rake::ExtensionTask.new("cipherstash_pg", spec) do |ext|
   ext.lib_dir = "lib"
   ext.source_pattern = "*.{rs,toml}"
@@ -86,12 +95,11 @@ namespace :gem do
       task platform => :prepare do
         RakeCompilerDock.sh <<-EOT, platform: platform, image: "rbsys/rcd:#{platform}"
           set -e
-          [[ "#{platform}" =~ ^a ]] && rustup default nightly
-          # This re-installs the nightly version of the relevant target after
-          # we so rudely switch the default toolchain
-          [ "#{platform}" = "arm64-darwin" ] && rustup target add aarch64-apple-darwin
-          [ "#{platform}" = "aarch64-linux" ] && rustup target add aarch64-unknown-linux-gnu
-					(cd driver/pq-ext && ./build.sh clean && ./build.sh setup && ./build.sh build)
+
+					rustup default #{target_platforms[platform][:rust]}
+					rustup target add #{target_platforms[platform][:toolchain]}
+
+					(cd driver/pq-ext && RUST_TARGET=#{target_platforms[platform][:toolchain]} ./build.sh clean && ./build.sh setup && ./build.sh build)
           bundle install
           rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
         EOT
