@@ -52,7 +52,8 @@ exttask = Rake::ExtensionTask.new("cipherstash_pg", spec) do |ext|
   ext.lib_dir = "lib"
   ext.source_pattern = "*.{rs,toml}"
   ext.cross_compile  = true
-  ext.cross_platform = %w[x86_64-linux x86_64-darwin arm64-darwin aarch64-linux]
+  # ext.cross_platform = %w[x86_64-linux x86_64-darwin arm64-darwin aarch64-linux]
+  ext.cross_platform = %w[x86_64-linux]
 end
 
 namespace :gem do
@@ -90,7 +91,7 @@ namespace :gem do
           # we so rudely switch the default toolchain
           [ "#{platform}" = "arm64-darwin" ] && rustup target add aarch64-apple-darwin
           [ "#{platform}" = "aarch64-linux" ] && rustup target add aarch64-unknown-linux-gnu
-					(cd driver/pq-ext && ./build.sh setup && ./build.sh build)
+					(cd driver/pq-ext && ./build.sh clean && ./build.sh setup && ./build.sh build)
           bundle install
           rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
         EOT
