@@ -58,6 +58,8 @@ target_platforms = {
 }
 
 exttask = Rake::ExtensionTask.new("cipherstash_pg", spec) do |ext|
+  ext.name = "pg_ext" # TODO: Rename this when we rename+edit the lib/pg* parts of this gem.
+  ext.gem_spec = $gem_spec
   ext.lib_dir = "lib"
   ext.source_pattern = "*.{rs,toml}"
   ext.cross_compile  = true
