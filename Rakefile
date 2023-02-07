@@ -51,8 +51,8 @@ require "rake/extensiontask"
 # Target platforms.
 # The keys are the RCD platform names and the values are the Rust toolchains and Rust version that are required.
 target_platforms = {
- "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "default" },
- "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "default" },
+ "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "stable" },
+ "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "stable" },
  "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
  "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
 }
