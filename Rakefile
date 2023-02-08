@@ -55,6 +55,7 @@ target_platforms = {
  "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "stable" },
  "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
  "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
+ # TODO: add windows support
 }
 
 exttask = Rake::ExtensionTask.new do |ext|
