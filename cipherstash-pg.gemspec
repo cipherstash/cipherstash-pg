@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
   end
-  spec.extensions    = ["ext/extconf.rb"]
+  # spec.extensions    = ["ext/extconf.rb"]
   spec.require_paths = ["lib"]
   spec.cert_chain    = ["certs/ged.pem"]
   spec.rdoc_options  = ["--main", "README.rdoc",
