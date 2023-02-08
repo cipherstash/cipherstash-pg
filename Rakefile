@@ -29,7 +29,7 @@ CLEAN.include "lib/*/libpq.dll"
 CLEAN.include "lib/pg_ext.*"
 CLEAN.include "lib/pg/postgresql_lib_path.rb"
 
-load 'Rakefile.cross'
+# load 'Rakefile.cross'
 
 Bundler::GemHelper.install_tasks
 $gem_spec = Bundler.load_gemspec(GEMSPEC)
