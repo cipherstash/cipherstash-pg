@@ -57,7 +57,7 @@ target_platforms = {
  "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
 }
 
-exttask = Rake::ExtensionTask.new("cipherstash_pg", spec) do |ext|
+exttask = Rake::ExtensionTask.new do |ext|
   ext.name = "pg_ext" # TODO: Rename this when we rename+edit the lib/pg* parts of this gem.
   ext.gem_spec = $gem_spec
   ext.lib_dir = "lib"
