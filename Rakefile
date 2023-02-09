@@ -102,7 +102,7 @@ namespace :gem do
 					rustup default #{target_platforms[platform][:rust]}
 					rustup target add #{target_platforms[platform][:toolchain]}
 
-					(cd driver/pq-ext && RUST_TARGET=#{target_platforms[platform][:toolchain]} ./build.sh clean && ./build.sh setup && ./build.sh build)
+					(cd vendor/driver/pq-ext && RUST_TARGET=#{target_platforms[platform][:toolchain]} ./build.sh clean && ./build.sh setup && ./build.sh build)
           bundle install
           rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
         EOT
