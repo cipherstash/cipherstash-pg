@@ -54,9 +54,10 @@ target_platforms = {
  "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "stable" },
  "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "stable" },
  "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
- "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
- # TODO: add windows support
+ "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" },
+ "x64-mingw32" => { toolchain: "x86_64-pc-windows-msvc", rust: "default" }
 }
+
 
 exttask = Rake::ExtensionTask.new do |ext|
   ext.name = "pg_ext" # TODO: Rename this when we rename+edit the lib/pg* parts of this gem.
@@ -64,8 +65,7 @@ exttask = Rake::ExtensionTask.new do |ext|
   ext.lib_dir = "lib"
   ext.source_pattern = "*.{rs,toml}"
   ext.cross_compile  = true
-  # ext.cross_platform = %w[x86_64-linux x86_64-darwin arm64-darwin aarch64-linux]
-  ext.cross_platform = %w[x86_64-linux]
+  ext.cross_platform = target_platforms.keys
 end
 
 namespace :gem do
