@@ -99,6 +99,23 @@ namespace :gem do
         RakeCompilerDock.sh <<-EOT, platform: platform, image: "rbsys/rcd:#{platform}"
           set -e
 
+          mkdir $HOME/.ssh
+          chmod 700 $HOME/.ssh
+
+          cat <<- SSH_PRIV_KEY > $HOME/.ssh/id_rsa
+#{File.read("#{ENV["HOME"]}/.ssh/id_rsa")}
+SSH_PRIV_KEY
+          cat <<- SSH_PUB_KEY > $HOME/.ssh/id_rsa.pub
+#{File.read("#{ENV["HOME"]}/.ssh/id_rsa.pub")}
+SSH_PUB_KEY
+
+          chmod 600 $HOME/.ssh/id_rsa
+          chmod 644 $HOME/.ssh/id_rsa.pub
+
+          eval `ssh-agent`
+
+          ssh-add $HOME/.ssh/id_rsa
+
 					rustup default #{target_platforms[platform][:rust]}
 					rustup target add #{target_platforms[platform][:toolchain]}
 
