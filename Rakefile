@@ -54,8 +54,8 @@ target_platforms = {
  "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "stable" },
  "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "stable" },
  "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
- "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" },
- "x64-mingw32" => { toolchain: "x86_64-pc-windows-msvc", rust: "stable" }
+ "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
+#  "x64-mingw32" => { toolchain: "x86_64-pc-windows-msvc", rust: "stable" }
 }
 
 
@@ -102,7 +102,8 @@ namespace :gem do
 					rustup default #{target_platforms[platform][:rust]}
 					rustup target add #{target_platforms[platform][:toolchain]}
 
-					(cd vendor/driver/pq-ext && RUST_TARGET=#{target_platforms[platform][:toolchain]} ./build.sh clean && ./build.sh setup && ./build.sh build)
+          export RUST_TARGET=#{target_platforms[platform][:toolchain]}
+					(cd vendor/driver/pq-ext && ./build.sh clean && ./build.sh setup && ./build.sh build)
           bundle install
           rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
         EOT
