@@ -5,7 +5,7 @@ require_relative 'lib/pg/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cipherstash-pg"
-  spec.version       = PG::VERSION
+  spec.version       = PG::VERSION # Match the gem's version intentionally.
   spec.authors       = ["Michael Granger", "Lars Kanis"]
   spec.email         = ["ged@FaerieMUD.org", "lars@greiz-reinsdorf.de"]
 
@@ -25,6 +25,9 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features|vendor)/}) }
   end
+  spec.files << "vendor/driver/database-extensions/postgresql/install.sql"
+  spec.files << "vendor/driver/database-extensions/postgresql/uninstall.sql"
+
   # spec.extensions    = ["ext/extconf.rb"]
   spec.require_paths = ["lib"]
   spec.cert_chain    = ["certs/ged.pem"]
