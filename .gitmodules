@@ -1,0 +1,3 @@
+[submodule "vendor/driver"]
+	path = vendor/driver
+	url = git@github.com:cipherstash/driver.git
