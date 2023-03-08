@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features|vendor)/}) }
+    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features)/}) }
   end
   spec.extensions    = ["ext/extconf.rb"]
   spec.require_paths = ["lib"]
@@ -31,6 +31,6 @@ Gem::Specification.new do |spec|
   spec.rdoc_options  = ["--main", "README.rdoc",
                         "--title", "PG: The Ruby PostgreSQL Driver"]
   spec.extra_rdoc_files = `git ls-files -z *.rdoc lib/*.rb lib/*/*.rb ext/*.c ext/*.h`.split("\x0")
-  spec.files << "vendor/driver/database-extensions/postgresql/install.sql"
-  spec.files << "vendor/driver/database-extensions/postgresql/uninstall.sql"
+  spec.files << "vendor/database-extensions/install.sql"
+  spec.files << "vendor/database-extensions/uninstall.sql"
 end
