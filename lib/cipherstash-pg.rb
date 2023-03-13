@@ -2,7 +2,7 @@ require_relative './pg'
 
 module CipherStash
   module PG
-    DB_EXT_DIR = File.join(__dir__, '../vendor/driver/database-extensions/postgresql')
+    DB_EXT_DIR = File.join(__dir__, '../vendor/database-extensions')
 
     def self.install_script
       File.read(File.join(DB_EXT_DIR, "install.sql"))
