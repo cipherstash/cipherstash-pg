@@ -35,6 +35,8 @@ else
 		with_config('pg_config') ||
 		find_executable('pg_config')
 
+	puts "****** PGCONFIG: #{pg_config}"
+
 	if pgconfig && pgconfig != 'ignore'
 		$stderr.puts "Using config values from %s" % [ pgconfig ]
 		incdir = IO.popen([pgconfig, "--includedir"], &:read).chomp
@@ -78,9 +80,15 @@ if RUBY_VERSION >= '2.3.0' && /solaris/ =~ RUBY_PLATFORM
 end
 
 begin
+	puts "****** find_header: 1"
 	find_header( 'libpq-fe.h' ) or abort "Can't find the 'libpq-fe.h header"
+	puts "****** find_header: 2"
+	find_header( 'libpq-fe.h' ) or abort "Can't find the 'libpq-fe.h header"
+	puts "****** find_header: 3"
 	find_header( 'libpq/libpq-fs.h' ) or abort "Can't find the 'libpq/libpq-fs.h header"
+	puts "****** find_header: 4"
 	find_header( 'pg_config_manual.h' ) or abort "Can't find the 'pg_config_manual.h' header"
+	puts "****** find_header: 5"
 
 	abort "Can't find the PostgreSQL client library (libpq)" unless
 		have_library( 'pq', 'PQconnectdb', ['libpq-fe.h'] ) ||
