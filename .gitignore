@@ -4,6 +4,7 @@
 /doc/
 /lib/*.bundle
 /lib/*.so
+/lib/*.so.*
 /lib/2.*/
 /pkg/
 /tmp/
