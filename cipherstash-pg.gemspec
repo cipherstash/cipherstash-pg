@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   end
   spec.extensions    = ["ext/extconf.rb"]
   spec.require_paths = ["lib"]
-  spec.cert_chain    = ["certs/ged.pem"]
+  # spec.cert_chain    = ["certs/ged.pem"]
   spec.rdoc_options  = ["--main", "README.rdoc",
                         "--title", "PG: The Ruby PostgreSQL Driver"]
   spec.extra_rdoc_files = `git ls-files -z *.rdoc lib/*.rb lib/*/*.rb ext/*.c ext/*.h`.split("\x0")
