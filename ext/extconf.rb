@@ -29,10 +29,11 @@ if enable_config("windows-cross")
 	dir_config 'pg'
 
 else
+	pgconfig = with_config('pg-config') ||
+				with_config('pg_config') ||
+				find_executable('pg_config')
+
 	# Native build
-
-	pgconfig = "#{__dir__}/../vendor/driver/pq-ext/ext/build/bin/pg_config"
-
 	if pgconfig && pgconfig != 'ignore'
 		$stderr.puts "Using config values from %s" % [ pgconfig ]
 		incdir = IO.popen([pgconfig, "--includedir"], &:read).chomp
