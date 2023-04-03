@@ -21,7 +21,7 @@ TESTDIR = BASEDIR + "tmp_test_*"
 DLEXT   = RbConfig::CONFIG['DLEXT']
 EXT     = LIBDIR + "pg_ext.#{DLEXT}"
 
-GEMSPEC = 'pg.gemspec'
+GEMSPEC = 'cipherstash-pg.gemspec'
 
 CLEAN.include( TESTDIR.to_s )
 CLEAN.include( PKGDIR.to_s, TMPDIR.to_s )
