@@ -24,13 +24,7 @@ Gem::Specification.new do |spec|
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{\A(?:test|spec|features|vendor)/}) }
-
-    case RUBY_PLATFORM
-      when /linux/
-        files.push('lib/libpq.so.5')
-      when /darwin/
-        files.push('lib/libpq.dylib')
-    end
+    files.push('lib/libpq.so.5', 'lib/libpq.dylib')
 
     files
   end
