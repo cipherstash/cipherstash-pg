@@ -21,7 +21,7 @@ TESTDIR = BASEDIR + "tmp_test_*"
 DLEXT   = RbConfig::CONFIG['DLEXT']
 EXT     = LIBDIR + "pg_ext.#{DLEXT}"
 
-GEMSPEC = 'cipherstash-pg.gemspec'
+GEMSPEC = 'pg.gemspec'
 
 CLEAN.include( TESTDIR.to_s )
 CLEAN.include( PKGDIR.to_s, TMPDIR.to_s )
@@ -29,7 +29,7 @@ CLEAN.include "lib/*/libpq.dll"
 CLEAN.include "lib/pg_ext.*"
 CLEAN.include "lib/pg/postgresql_lib_path.rb"
 
-# load 'Rakefile.cross'
+load 'Rakefile.cross'
 
 Bundler::GemHelper.install_tasks
 $gem_spec = Bundler.load_gemspec(GEMSPEC)
@@ -39,94 +39,32 @@ task :maint do
 	ENV['MAINTAINER_MODE'] = 'yes'
 end
 
-spec = Bundler.load_gemspec("cipherstash-pg.gemspec")
+# Rake-compiler task
+Rake::ExtensionTask.new do |ext|
+	ext.name           = 'pg_ext'
+	ext.gem_spec       = $gem_spec
+	ext.ext_dir        = 'ext'
+	ext.lib_dir        = 'lib'
+	ext.source_pattern = "*.{c,h}"
+	ext.cross_compile  = true
+	ext.cross_platform = CrossLibraries.map(&:for_platform)
 
-require "rubygems/package_task"
+	ext.cross_config_options += CrossLibraries.map do |lib|
+		{
+			lib.for_platform => [
+				"--enable-windows-cross",
+				"--with-pg-include=#{lib.static_postgresql_incdir}",
+				"--with-pg-lib=#{lib.static_postgresql_libdir}",
+				# libpq-fe.h resides in src/interfaces/libpq/ before make install
+				"--with-opt-include=#{lib.static_postgresql_libdir}",
+			]
+		}
+	end
 
-Gem::PackageTask.new(spec) do |pkg|
-end
-
-require "rake/extensiontask"
-
-# Target platforms.
-# The keys are the RCD platform names and the values are the Rust toolchains and Rust version that are required.
-target_platforms = {
- "x86_64-linux" => { toolchain: "x86_64-unknown-linux-gnu", rust: "stable" },
- "x86_64-darwin" => { toolchain: "x86_64-apple-darwin", rust: "stable" },
- "arm64-darwin" => { toolchain: "aarch64-apple-darwin", rust: "nightly" },
- "aarch64-linux" => { toolchain: "aarch64-unknown-linux-gnu", rust: "nightly" }
-#  "x64-mingw32" => { toolchain: "x86_64-pc-windows-msvc", rust: "stable" }
-}
-
-
-exttask = Rake::ExtensionTask.new do |ext|
-  ext.name = "pg_ext" # TODO: Rename this when we rename+edit the lib/pg* parts of this gem.
-  ext.gem_spec = $gem_spec
-  ext.lib_dir = "lib"
-  ext.source_pattern = "*.{rs,toml}"
-  ext.cross_compile  = true
-  ext.cross_platform = target_platforms.keys
-end
-
-namespace :gem do
-  desc "Push all freshly-built gems to RubyGems"
-  task :push do
-    Rake::Task.tasks.select { |t| t.name =~ %r{^pkg/cipherstash-pg-.*\.gem} && t.already_invoked }.each do |pkgtask|
-      sh "gem", "push", pkgtask.name
-    end
-
-    Rake::Task.tasks
-      .select { |t| t.name =~ %r{^gem:cross:} && exttask.cross_platform.include?(t.name.split(":").last) }
-      .select(&:already_invoked)
-      .each do |task|
-      platform = task.name.split(":").last
-      sh "gem", "push", "pkg/#{spec.full_name}-#{platform}.gem"
-    end
-  end
-
-  namespace :cross do
-    task :prepare do
-      require "rake_compiler_dock"
-      sh "bundle package"
-    end
-
-    exttask.cross_platform.each do |platform|
-      desc "Cross-compile all native gems in parallel"
-      multitask :all => platform
-
-      desc "Cross-compile a binary gem for #{platform}"
-      task platform => :prepare do
-        RakeCompilerDock.sh <<-EOT, platform: platform, image: "rbsys/rcd:#{platform}"
-          set -e
-
-          mkdir $HOME/.ssh
-          chmod 700 $HOME/.ssh
-
-          cat <<- SSH_PRIV_KEY > $HOME/.ssh/id_rsa
-#{File.read("#{ENV["HOME"]}/.ssh/id_rsa")}
-SSH_PRIV_KEY
-          cat <<- SSH_PUB_KEY > $HOME/.ssh/id_rsa.pub
-#{File.read("#{ENV["HOME"]}/.ssh/id_rsa.pub")}
-SSH_PUB_KEY
-
-          chmod 600 $HOME/.ssh/id_rsa
-          chmod 644 $HOME/.ssh/id_rsa.pub
-
-          eval `ssh-agent`
-
-          ssh-add $HOME/.ssh/id_rsa
-
-					rustup default #{target_platforms[platform][:rust]}
-					rustup target add #{target_platforms[platform][:toolchain]}
-
-          export RUST_TARGET=#{target_platforms[platform][:toolchain]}
-					(cd vendor/driver/pq-ext && ./build.sh clean && ./build.sh setup && ./build.sh build)
-          bundle install
-          rake native:#{platform} gem RUBY_CC_VERSION=3.1.0:3.0.0:2.7.0
-        EOT
-      end
-    end
-  end
+	# Add libpq.dll to windows binary gemspec
+	ext.cross_compiling do |spec|
+		spec.files << "lib/#{spec.platform}/libpq.dll"
+	end
 end
 
 RSpec::Core::RakeTask.new(:spec).rspec_opts = "--profile -cfdoc"
@@ -164,4 +102,14 @@ end
 file 'ext/pg_errors.c' => ['ext/errorcodes.def'] do
 	# trigger compilation of changed errorcodes.def
 	touch 'ext/pg_errors.c'
+end
+
+desc "Translate readme"
+task :translate do
+  cd "translation" do
+    # po4a's lexer might change, so record its version for reference
+    sh "LANG=C po4a --version > .po4a-version"
+
+    sh "po4a po4a.cfg"
+  end
 end
