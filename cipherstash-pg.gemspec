@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
     lib_suffix = if host_os.match? /linux/
       'so.5'
     elsif host_os.match? /darwin/
-      'dylib'
+      '5.dylib'
     else
       fail "unsupported platform: #{host_os}"
     end
