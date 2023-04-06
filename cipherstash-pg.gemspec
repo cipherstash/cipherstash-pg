@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "https://github.com/ged/ruby-pg/blob/master/History.rdoc"
   spec.metadata["documentation_uri"] = "http://deveiate.org/code/pg"
 
-  spec.platform = Gem::Platform::CURRENT
+  # spec.platform = Gem::Platform::CURRENT
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
