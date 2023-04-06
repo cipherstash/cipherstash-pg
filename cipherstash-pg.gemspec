@@ -5,7 +5,7 @@ require_relative 'lib/pg/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cipherstash-pg"
-  spec.version       = PG::VERSION
+  spec.version       = "1.0.0-beta-1"
   spec.authors       = ["Michael Granger", "Lars Kanis"]
   spec.email         = ["ged@FaerieMUD.org", "lars@greiz-reinsdorf.de"]
 
@@ -19,6 +19,8 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/ged/ruby-pg"
   spec.metadata["changelog_uri"] = "https://github.com/ged/ruby-pg/blob/master/History.rdoc"
   spec.metadata["documentation_uri"] = "http://deveiate.org/code/pg"
+
+  spec.platform = Gem::Platform::CURRENT
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
