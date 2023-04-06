@@ -37,8 +37,10 @@ Gem::Specification.new do |spec|
   end
   spec.extensions    = ["ext/extconf.rb"]
   spec.require_paths = ["lib"]
-  spec.cert_chain    = ["certs/ged.pem"]
+  # spec.cert_chain    = ["certs/ged.pem"]
   spec.rdoc_options  = ["--main", "README.rdoc",
                         "--title", "CipgerStash PG: The Ruby PostgreSQL Driver with CipherStash support"]
   spec.extra_rdoc_files = `git ls-files -z *.rdoc lib/*.rb lib/*/*.rb ext/*.c ext/*.h`.split("\x0")
+  spec.files << "vendor/database-extensions/install.sql"
+  spec.files << "vendor/database-extensions/uninstall.sql"
 end
